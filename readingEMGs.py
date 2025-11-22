@@ -119,11 +119,15 @@ class EMGMonitor(QtWidgets.QMainWindow):
         sampling_layout.addWidget(sampling_title)
         sampling_layout.addWidget(self.sampling_rate)
 
+        # Timer
+        self.timer = QtCore.QTimer()
+        self.timer.timeout.connect(self.update_data)
+
         # Main layout
         title_layout = QtWidgets.QHBoxLayout()
         title_layout.addWidget(self.title)
         title_layout.addWidget(self.creators)
-
+        title_layout.addWidget(self.timer) 
         
         main_layout = QtWidgets.QVBoxLayout()
         main_layout.addLayout(title_layout)
@@ -139,10 +143,6 @@ class EMGMonitor(QtWidgets.QMainWindow):
         container = QtWidgets.QWidget()
         container.setLayout(main_layout)
         self.setCentralWidget(container)
-
-        # Timer
-        self.timer = QtCore.QTimer()
-        self.timer.timeout.connect(self.update_data)
 
         # Add design elements
         self.design_elements()

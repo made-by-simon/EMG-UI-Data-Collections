@@ -123,11 +123,17 @@ class EMGMonitor(QtWidgets.QMainWindow):
         self.timer = QtCore.QTimer()
         self.timer.timeout.connect(self.update_data)
 
+        self.timer_label = QtWidgets.QLabel("00:00")
+        self.timer_label.setFont(QFont('Arial', 16))
+        self.timer_label.setAlignment(QtCore.Qt.AlignCenter)
+
+        self.elapsed_seconds = 0
+
         # Main layout
         title_layout = QtWidgets.QHBoxLayout()
         title_layout.addWidget(self.title)
         title_layout.addWidget(self.creators)
-        title_layout.addWidget(self.timer) 
+        title_layout.addWidget(self.timer_label) 
         
         main_layout = QtWidgets.QVBoxLayout()
         main_layout.addLayout(title_layout)
@@ -148,7 +154,9 @@ class EMGMonitor(QtWidgets.QMainWindow):
         self.design_elements()
 
     def start_recording(self):
-        self.timer.start(1)  # Update every 10 ms   
+        self.elapsed_seconds = 0
+        self.start_time = time.time()
+        self.timer.start(1000)  # 1 second interval
     
     def stop_recording(self):
         self.timer.stop()
@@ -164,6 +172,11 @@ class EMGMonitor(QtWidgets.QMainWindow):
         self.serial = serial.Serial(serial_port, baud_rate)
 
     def update_data(self):
+        self.elapsed_seconds += 1
+        minutes = self.elapsed_seconds // 60
+        seconds = self.elapsed_seconds % 60
+        self.timer_label.setText(f"{minutes:02d}:{seconds:02d}")
+
         try:
             line = self.serial.readline().decode('utf-8').strip()
             emg_value = float(line)

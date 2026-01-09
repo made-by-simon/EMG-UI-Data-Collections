@@ -31,3 +31,18 @@ An application to save EMG data into EDF format.
    pip install pyEDFlib
    ```
    > A library used for coverting the obtained data into a readable .edf file.
+   ### [datetime](https://pypi.org/project/pyEDFlib/](https://docs.python.org/3/library/datetime.html)
+   ```py
+   pip install datetime
+   ```
+   > A library used for getting the date.
+   ### [os](https://docs.python.org/3/library/os.html)
+   ```py
+   pip install os
+   ```
+   > A library used for accessing the operating system
+   ### [numpy]([https://docs.python.org/3/library/os.html](https://numpy.org/))
+   ```py
+   pip install numpy
+   ```
+   > A library used for mathematical functions.

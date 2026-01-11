@@ -195,6 +195,8 @@ class EMGMonitor(QtWidgets.QMainWindow):
             self.edf.close()
             self.edf = None
 
+        self.timer.stop()
+
         # Create filtered EDF
         try:
             from pyedflib import highlevel

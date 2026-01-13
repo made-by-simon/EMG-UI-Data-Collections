@@ -3,7 +3,7 @@ Flask web interface for real-time EMG signal collection and recording.
 Progressive 3-page interface: Setup -> Recording -> Results
 """
 
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, jsonify, send_from_directory
 import os
 import threading
 import serial
@@ -52,6 +52,11 @@ recording_lock = threading.Lock()
 @app.route('/')
 def index():
     return render_template('index_emg.html')
+
+@app.route('/favicon.ico')
+def favicon():
+    return send_from_directory(os.path.join(app.root_path, ''),
+                               'favicon.ico', mimetype='image/vnd.microsoft.icon')
 
 @app.route('/api/check_serial', methods=['POST'])
 def check_serial():
@@ -268,6 +273,13 @@ def generate_plot(raw_path, filtered_path):
     """Generate matplotlib plot comparing raw and filtered signals."""
     from pyedflib import highlevel
 
+    # Bionix color scheme
+    COLOR_PRIMARY = '#111111'
+    COLOR_ACCENT = '#7e0000'
+    COLOR_SECONDARY = '#004749'
+    COLOR_TERTIARY = '#b09b72'
+    COLOR_BACKGROUND = '#ededed'
+
     # Read both signals
     raw_signals, _, _ = highlevel.read_edf(raw_path)
     filtered_signals, _, _ = highlevel.read_edf(filtered_path)
@@ -277,39 +289,39 @@ def generate_plot(raw_path, filtered_path):
 
     # Create figure with two subplots
     fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(14, 8))
-    fig.patch.set_facecolor('#0f172a')
+    fig.patch.set_facecolor(COLOR_BACKGROUND)
 
     # Plot raw signal
-    ax1.plot(time_axis, raw_signals[0], color='#00ffff', linewidth=0.5, alpha=0.8)
-    ax1.set_title('Raw EMG Signal', color='#f2f8fc', fontsize=14, fontweight='bold', pad=15)
-    ax1.set_xlabel('Time (seconds)', color='#f2f8fc', fontsize=11)
-    ax1.set_ylabel('Amplitude (µV)', color='#f2f8fc', fontsize=11)
-    ax1.grid(True, alpha=0.2, color='#94a3b8')
-    ax1.set_facecolor('#1e293b')
-    ax1.spines['bottom'].set_color('#94a3b8')
-    ax1.spines['top'].set_color('#94a3b8')
-    ax1.spines['left'].set_color('#94a3b8')
-    ax1.spines['right'].set_color('#94a3b8')
-    ax1.tick_params(colors='#f2f8fc')
+    ax1.plot(time_axis, raw_signals[0], color=COLOR_ACCENT, linewidth=0.6, alpha=0.9)
+    ax1.set_title('Raw EMG Signal', color=COLOR_PRIMARY, fontsize=16, fontweight='bold', pad=15)
+    ax1.set_xlabel('Time (seconds)', color=COLOR_PRIMARY, fontsize=12, fontweight='600')
+    ax1.set_ylabel('Amplitude (µV)', color=COLOR_PRIMARY, fontsize=12, fontweight='600')
+    ax1.grid(True, alpha=0.15, color=COLOR_TERTIARY, linestyle='-', linewidth=0.5)
+    ax1.set_facecolor('#ffffff')
+    ax1.spines['bottom'].set_color(COLOR_TERTIARY)
+    ax1.spines['top'].set_color(COLOR_TERTIARY)
+    ax1.spines['left'].set_color(COLOR_TERTIARY)
+    ax1.spines['right'].set_color(COLOR_TERTIARY)
+    ax1.tick_params(colors=COLOR_PRIMARY, labelsize=10)
 
     # Plot filtered signal
-    ax2.plot(time_axis, filtered_signals[0], color='#2d85cd', linewidth=0.5, alpha=0.8)
-    ax2.set_title('Filtered EMG Signal (20-450 Hz Bandpass)', color='#f2f8fc', fontsize=14, fontweight='bold', pad=15)
-    ax2.set_xlabel('Time (seconds)', color='#f2f8fc', fontsize=11)
-    ax2.set_ylabel('Amplitude (µV)', color='#f2f8fc', fontsize=11)
-    ax2.grid(True, alpha=0.2, color='#94a3b8')
-    ax2.set_facecolor('#1e293b')
-    ax2.spines['bottom'].set_color('#94a3b8')
-    ax2.spines['top'].set_color('#94a3b8')
-    ax2.spines['left'].set_color('#94a3b8')
-    ax2.spines['right'].set_color('#94a3b8')
-    ax2.tick_params(colors='#f2f8fc')
+    ax2.plot(time_axis, filtered_signals[0], color=COLOR_SECONDARY, linewidth=0.6, alpha=0.9)
+    ax2.set_title('Filtered EMG Signal (20-450 Hz Bandpass)', color=COLOR_PRIMARY, fontsize=16, fontweight='bold', pad=15)
+    ax2.set_xlabel('Time (seconds)', color=COLOR_PRIMARY, fontsize=12, fontweight='600')
+    ax2.set_ylabel('Amplitude (µV)', color=COLOR_PRIMARY, fontsize=12, fontweight='600')
+    ax2.grid(True, alpha=0.15, color=COLOR_TERTIARY, linestyle='-', linewidth=0.5)
+    ax2.set_facecolor('#ffffff')
+    ax2.spines['bottom'].set_color(COLOR_TERTIARY)
+    ax2.spines['top'].set_color(COLOR_TERTIARY)
+    ax2.spines['left'].set_color(COLOR_TERTIARY)
+    ax2.spines['right'].set_color(COLOR_TERTIARY)
+    ax2.tick_params(colors=COLOR_PRIMARY, labelsize=10)
 
     plt.tight_layout()
 
     # Convert plot to base64 string
     buffer = BytesIO()
-    plt.savefig(buffer, format='png', dpi=100, facecolor='#0f172a', edgecolor='none')
+    plt.savefig(buffer, format='png', dpi=120, facecolor=COLOR_BACKGROUND, edgecolor='none')
     buffer.seek(0)
     image_base64 = base64.b64encode(buffer.read()).decode('utf-8')
     plt.close(fig)

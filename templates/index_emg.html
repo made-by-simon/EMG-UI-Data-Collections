@@ -3,11 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EMG Signal Collection Interface</title>
+    <title>EMG Data Collection - Alberta Bionix</title>
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --color-primary: #111111;
+            --color-accent: #7e0000;
+            --color-secondary: #004749;
+            --color-tertiary: #b09b72;
+            --color-background: #ededed;
+            --color-white: #ffffff;
+        }
+
         * {
             margin: 0;
             padding: 0;
@@ -22,8 +32,8 @@
 
         body {
             font-family: "Inter", sans-serif;
-            background: linear-gradient(135deg, #1a4c75 0%, #03080d 100%);
-            color: #f2f8fc;
+            background: var(--color-background);
+            color: var(--color-primary);
             position: relative;
         }
 
@@ -34,8 +44,8 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background: radial-gradient(circle at 20% 50%, rgba(45, 133, 205, 0.1) 0%, transparent 50%),
-                        radial-gradient(circle at 80% 50%, rgba(45, 133, 205, 0.08) 0%, transparent 50%);
+            background: radial-gradient(circle at 20% 50%, rgba(126, 0, 0, 0.05) 0%, transparent 50%),
+                        radial-gradient(circle at 80% 50%, rgba(0, 71, 73, 0.05) 0%, transparent 50%);
             pointer-events: none;
         }
 
@@ -49,6 +59,7 @@
             justify-content: center;
             align-items: center;
             padding: 20px;
+            overflow-y: auto;
         }
 
         .page.active {
@@ -56,93 +67,153 @@
         }
 
         .container {
-            background: rgba(30, 41, 59, 0.8);
-            backdrop-filter: blur(20px);
-            padding: 50px;
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(16px);
+            padding: 40px;
             border-radius: 24px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6),
-                        0 0 0 1px rgba(255, 255, 255, 0.1);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(176, 155, 114, 0.3);
             max-width: 700px;
             width: 100%;
-            max-height: 90vh;
+            max-height: calc(100vh - 40px);
             overflow-y: auto;
             z-index: 1;
+            margin: auto;
         }
 
         .container-wide {
             max-width: 1200px;
         }
 
+        .logo {
+            display: block;
+            margin: 0 auto 20px;
+            height: 60px;
+            width: auto;
+            flex-shrink: 0;
+        }
+
         h1 {
-            font-size: 36px;
-            font-weight: 700;
-            color: #f2f8fc;
-            letter-spacing: -0.5px;
-            margin: 0 0 16px 0;
+            font-size: clamp(32px, 5vw, 48px);
+            font-weight: 900;
+            color: var(--color-secondary);
+            letter-spacing: -1px;
+            margin: 0 0 8px 0;
             text-align: center;
+            line-height: 1.2;
         }
 
         .subtitle {
-            color: #f2f8fc;
-            font-size: 15px;
-            font-weight: 400;
-            margin: 0 0 40px 0;
+            color: var(--color-secondary);
+            font-size: clamp(14px, 2vw, 16px);
+            font-weight: 500;
+            margin: 0 0 32px 0;
             line-height: 1.5;
             text-align: center;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 30px 24px;
+            }
+
+            .logo {
+                height: 50px;
+                margin-bottom: 16px;
+            }
+
+            h1 {
+                margin-bottom: 6px;
+            }
+
+            .subtitle {
+                margin-bottom: 24px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .page {
+                padding: 12px;
+            }
+
+            .container {
+                padding: 24px 20px;
+            }
+
+            .logo {
+                height: 40px;
+            }
         }
 
         .form-group {
             display: flex;
             flex-direction: column;
-            margin-bottom: 24px;
+            margin-bottom: 20px;
         }
 
         label {
-            color: #f2f8fc;
-            font-size: 12px;
-            font-weight: 600;
-            letter-spacing: 1.2px;
+            color: var(--color-secondary);
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 1px;
             text-transform: uppercase;
             display: block;
-            margin-bottom: 12px;
+            margin-bottom: 8px;
         }
 
         input, select {
             font-family: "Inter", sans-serif;
             width: 100%;
-            padding: 14px 18px;
+            padding: 12px 16px;
             font-size: 15px;
             font-weight: 500;
-            background: rgba(15, 23, 42, 0.6);
-            border: 2px solid rgba(148, 163, 184, 0.2);
-            border-radius: 8px;
-            color: #f2f8fc;
+            background: rgba(255, 255, 255, 0.9);
+            border: 2px solid rgba(176, 155, 114, 0.3);
+            border-radius: 12px;
+            color: var(--color-primary);
             transition: all 0.3s ease;
         }
 
         input:focus, select:focus {
             outline: none;
-            border-color: #2d85cd;
-            background: rgba(15, 23, 42, 0.8);
-            box-shadow: 0 0 0 4px rgba(45, 133, 205, 0.2);
+            border-color: var(--color-accent);
+            background: var(--color-white);
+            box-shadow: 0 0 0 3px rgba(126, 0, 0, 0.1);
         }
 
         button {
             width: 100%;
-            padding: 18px 32px;
-            font-size: 14px;
+            padding: 16px 28px;
+            font-size: 13px;
             font-weight: 700;
             border: none;
-            border-radius: 8px;
+            border-radius: 12px;
             cursor: pointer;
-            background: #2d85cd;
-            color: #f2f8fc;
-            box-shadow: 0 8px 24px rgba(45, 133, 205, 0.4);
+            background: var(--color-accent);
+            color: var(--color-white);
+            box-shadow: 0 4px 12px rgba(126, 0, 0, 0.3);
             position: relative;
             overflow: hidden;
             letter-spacing: 0.8px;
             font-family: "Inter", sans-serif;
-            transition: all 0.2s;
+            transition: all 0.3s ease;
+            margin-top: 8px;
+        }
+
+        @media (max-width: 768px) {
+            .form-group {
+                margin-bottom: 16px;
+            }
+
+            input, select {
+                padding: 10px 14px;
+                font-size: 14px;
+            }
+
+            button {
+                padding: 14px 24px;
+                font-size: 12px;
+            }
         }
 
         button::before {
@@ -152,14 +223,19 @@
             left: -100%;
             width: 100%;
             height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
             transition: left 0.5s;
         }
 
         button:hover:not(:disabled) {
-            background: #3a9be0;
+            opacity: 0.85;
             transform: translateY(-2px);
-            box-shadow: 0 12px 32px rgba(45, 133, 205, 0.5);
+            box-shadow: 0 6px 20px rgba(126, 0, 0, 0.4);
+        }
+
+        button:active:not(:disabled) {
+            opacity: 0.95;
+            transform: translateY(0);
         }
 
         button:hover::before {
@@ -167,63 +243,79 @@
         }
 
         button:disabled {
-            opacity: 0.6;
+            opacity: 0.5;
             cursor: not-allowed;
         }
 
         .button-secondary {
-            background: rgba(148, 163, 184, 0.2);
-            box-shadow: none;
+            background: var(--color-secondary);
+            box-shadow: 0 4px 12px rgba(0, 71, 73, 0.3);
             margin-top: 16px;
         }
 
         .button-secondary:hover:not(:disabled) {
-            background: rgba(148, 163, 184, 0.3);
+            opacity: 0.85;
+            box-shadow: 0 6px 20px rgba(0, 71, 73, 0.4);
         }
 
         .button-danger {
-            background: #e63946;
-            box-shadow: 0 8px 24px rgba(230, 57, 70, 0.4);
+            background: var(--color-accent);
+            box-shadow: 0 4px 12px rgba(126, 0, 0, 0.3);
             margin-top: 16px;
         }
 
         .button-danger:hover:not(:disabled) {
-            background: #d62839;
+            opacity: 0.85;
+            box-shadow: 0 6px 20px rgba(126, 0, 0, 0.4);
         }
 
         .status-box {
-            background: rgba(15, 23, 42, 0.6);
-            border: 2px solid rgba(148, 163, 184, 0.2);
-            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.9);
+            border: 2px solid rgba(176, 155, 114, 0.3);
+            border-radius: 16px;
             padding: 24px;
-            margin-bottom: 24px;
+            margin-bottom: 20px;
             text-align: center;
         }
 
         .timer-display {
-            font-size: 48px;
-            font-weight: 700;
-            color: #2d85cd;
-            margin: 16px 0;
+            font-size: clamp(36px, 8vw, 56px);
+            font-weight: 900;
+            color: var(--color-accent);
+            margin: 12px 0;
             font-family: monospace;
+            letter-spacing: 2px;
+            line-height: 1.2;
         }
 
         .samples-count {
-            font-size: 16px;
-            color: rgba(242, 248, 252, 0.7);
+            font-size: clamp(14px, 2.5vw, 16px);
+            color: var(--color-secondary);
             margin-top: 8px;
+            font-weight: 600;
         }
 
         .status-text {
             font-family: "Inter", sans-serif;
-            color: #f2f8fc;
-            font-size: 15px;
-            margin-bottom: 10px;
-            font-weight: 500;
+            color: var(--color-secondary);
+            font-size: clamp(13px, 2vw, 15px);
+            margin-bottom: 12px;
+            font-weight: 600;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 12px;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        @media (max-width: 768px) {
+            .status-box {
+                padding: 20px 16px;
+            }
+
+            .timer-display {
+                margin: 8px 0;
+            }
         }
 
         @keyframes spin {
@@ -232,8 +324,8 @@
         }
 
         .spinner {
-            border: 3px solid rgba(255, 255, 255, 0.2);
-            border-top: 3px solid #2d85cd;
+            border: 3px solid rgba(176, 155, 114, 0.3);
+            border-top: 3px solid var(--color-accent);
             border-radius: 50%;
             width: 24px;
             height: 24px;
@@ -243,88 +335,125 @@
 
         .progress-bar {
             width: 100%;
-            height: 30px;
-            background: rgba(15, 23, 42, 0.6);
-            border-radius: 15px;
+            height: 28px;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 14px;
             overflow: hidden;
-            margin: 15px 0;
-            border: 1px solid rgba(148, 163, 184, 0.2);
+            margin: 12px 0;
+            border: 2px solid rgba(176, 155, 114, 0.3);
         }
 
         .progress-fill {
             font-family: "Inter", sans-serif;
             height: 100%;
-            background: linear-gradient(90deg, #2d85cd 0%, #3a9be0 100%);
+            background: linear-gradient(90deg, var(--color-accent) 0%, #a00000 100%);
             width: 0%;
             transition: width 0.5s;
             display: flex;
             align-items: center;
             justify-content: center;
-            color: #f2f8fc;
-            font-weight: 600;
-            font-size: 13px;
+            color: var(--color-white);
+            font-weight: 700;
+            font-size: 12px;
+            letter-spacing: 0.5px;
         }
 
         .results-grid {
             display: grid;
             grid-template-columns: 1fr;
-            gap: 16px;
-            margin-bottom: 24px;
+            gap: 12px;
+            margin-bottom: 20px;
         }
 
         .result-item {
-            background: rgba(15, 23, 42, 0.6);
-            border: 1px solid rgba(148, 163, 184, 0.2);
-            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.9);
+            border: 2px solid rgba(176, 155, 114, 0.3);
+            border-radius: 12px;
             padding: 16px;
         }
 
         .result-label {
-            font-size: 12px;
-            font-weight: 600;
+            font-size: 11px;
+            font-weight: 700;
             text-transform: uppercase;
-            letter-spacing: 1px;
-            color: rgba(242, 248, 252, 0.7);
+            letter-spacing: 0.8px;
+            color: var(--color-secondary);
             margin-bottom: 8px;
         }
 
         .result-value {
             font-family: monospace;
-            font-size: 13px;
-            color: #2d85cd;
+            font-size: 12px;
+            color: var(--color-primary);
             word-break: break-all;
+            font-weight: 600;
+            line-height: 1.4;
         }
 
         .alert {
             padding: 16px;
-            border-radius: 8px;
-            margin-bottom: 24px;
-            font-size: 14px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            line-height: 1.5;
+        }
+
+        @media (max-width: 768px) {
+            .progress-bar {
+                height: 24px;
+            }
+
+            .progress-fill {
+                font-size: 11px;
+            }
+
+            .result-item {
+                padding: 14px;
+            }
+
+            .result-label {
+                font-size: 10px;
+            }
+
+            .result-value {
+                font-size: 11px;
+            }
+
+            .alert {
+                padding: 14px;
+                font-size: 12px;
+            }
         }
 
         .alert-success {
-            background: rgba(29, 185, 84, 0.2);
-            border: 2px solid rgba(29, 185, 84, 0.3);
-            color: #1db954;
+            background: rgba(0, 71, 73, 0.15);
+            border: 2px solid var(--color-secondary);
+            color: var(--color-secondary);
         }
 
         .alert-error {
-            background: rgba(230, 57, 70, 0.2);
-            border: 2px solid rgba(230, 57, 70, 0.3);
-            color: #e63946;
+            background: rgba(126, 0, 0, 0.15);
+            border: 2px solid var(--color-accent);
+            color: var(--color-accent);
         }
 
         .footer {
-            margin-top: 40px;
+            margin-top: 32px;
+            padding-top: 24px;
+            border-top: 1px solid rgba(176, 155, 114, 0.2);
             text-align: center;
-            color: #f2f8fc;
-            font-size: 12px;
+            color: var(--color-primary);
+            font-size: 11px;
+            opacity: 0.7;
+            line-height: 1.6;
         }
 
         .footer a {
-            color: #f2f8fc;
+            color: var(--color-accent);
             text-decoration: none;
             transition: opacity 0.2s;
+            font-weight: 600;
         }
 
         .footer a:hover {
@@ -338,11 +467,45 @@
         .results-image {
             width: 100%;
             height: auto;
-            border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            max-height: 500px;
+            object-fit: contain;
+            border-radius: 16px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.15);
             display: block;
-            margin-bottom: 24px;
-            border: 2px solid rgba(148, 163, 184, 0.2);
+            margin-bottom: 20px;
+            border: 2px solid rgba(176, 155, 114, 0.3);
+        }
+
+        @media (max-width: 768px) {
+            .footer {
+                margin-top: 24px;
+                padding-top: 20px;
+                font-size: 10px;
+            }
+
+            .results-image {
+                max-height: 400px;
+                margin-bottom: 16px;
+            }
+        }
+
+        /* Smooth scrollbar styling */
+        .container::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .container::-webkit-scrollbar-track {
+            background: rgba(176, 155, 114, 0.1);
+            border-radius: 4px;
+        }
+
+        .container::-webkit-scrollbar-thumb {
+            background: rgba(176, 155, 114, 0.4);
+            border-radius: 4px;
+        }
+
+        .container::-webkit-scrollbar-thumb:hover {
+            background: rgba(176, 155, 114, 0.6);
         }
     </style>
 </head>
@@ -350,8 +513,9 @@
     <!-- Page 1: Setup -->
     <div id="page1" class="page active">
         <div class="container">
-            <h1>EMG Signal Collection</h1>
-            <p class="subtitle">Real-time electromyography data acquisition and processing</p>
+            <img src="/favicon.ico" alt="Alberta Bionix" class="logo">
+            <h1>EMG Data Collection</h1>
+            <p class="subtitle">Real-time electromyography signal acquisition and processing</p>
 
             <div class="form-group">
                 <label for="subjectId">Subject ID</label>
@@ -372,8 +536,8 @@
             <button id="startBtn" onclick="startRecording()" disabled>START RECORDING</button>
 
             <div class="footer">
-                <a href="https://simonwong.site" target="_blank" rel="noopener noreferrer">Visit simonwong.site</a>
-                <p>© 2025 Simon Wong. All rights reserved.</p>
+                <p>© 2026 <a href="https://albertabionix.ca" target="_blank" rel="noopener noreferrer">Alberta Bionix</a></p>
+                <p>Developed by <a href="https://simonwong.site" target="_blank" rel="noopener noreferrer">Simon Wong</a></p>
             </div>
         </div>
     </div>
@@ -381,6 +545,7 @@
     <!-- Page 2: Recording Progress -->
     <div id="page2" class="page">
         <div class="container">
+            <img src="/favicon.ico" alt="Alberta Bionix" class="logo">
             <h1>Recording in Progress</h1>
             <p class="subtitle">Collecting EMG signals</p>
 
@@ -404,6 +569,7 @@
     <!-- Page 3: Results -->
     <div id="page3" class="page">
         <div class="container container-wide">
+            <img src="/favicon.ico" alt="Alberta Bionix" class="logo">
             <h1>Recording Complete</h1>
             <p class="subtitle">EMG data saved successfully</p>
 
